@@ -18,4 +18,7 @@ psql -h localhost -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB \
 psql -h localhost -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB \
     -f postgres/init/03_create_staging_tables.sql
 
+psql -h localhost -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB \
+    -f postgres/init/04_create_dw_tables.sql
+
 log "RESET completed"

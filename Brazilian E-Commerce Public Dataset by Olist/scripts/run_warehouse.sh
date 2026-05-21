@@ -1,42 +1,43 @@
 #!/bin/bash
-# =============================================================================
-# run_warehouse.sh
-# Chạy toàn bộ warehouse layer theo đúng thứ tự dependency
-# Usage: ./scripts/run_warehouse.sh
-# =============================================================================
 
-set -euo pipefail
+set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/utils.sh"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-DB_CONN="${DB_CONN:-postgresql://postgres:postgres@localhost:5432/olist}"
-SQL_DIR="$SCRIPT_DIR/../postgres/warehouse"
-LOG_FILE="$SCRIPT_DIR/../logs/warehouse.log"
+source "$ROOT_DIR/.env"
+source "$ROOT_DIR/scripts/utils.sh"
 
-log()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"; }
-fail() { log "ERROR: $1"; exit 1; }
+export PGPASSWORD=$POSTGRES_PASSWORD
 
-run_sql() {
-    local file="$SQL_DIR/$1"
-    log "Running: $1"
-    psql "$DB_CONN" -v ON_ERROR_STOP=1 -f "$file" >> "$LOG_FILE" 2>&1 \
-        || fail "Failed at $1"
-    log "Done:    $1"
-}
+SQL_DIR="$ROOT_DIR/postgres/warehouse"
 
 log "====== Warehouse pipeline START ======"
 
-# ── Dimensions (order matters: dim_date first, dims independent of each other)
+run_sql() {
+    local file="$1"
+
+    log "Running: $file"
+
+    psql -h localhost \
+        -p $POSTGRES_PORT \
+        -U $POSTGRES_USER \
+        -d $POSTGRES_DB \
+        -v ON_ERROR_STOP=1 \
+        -f "$SQL_DIR/$file"
+
+    log "Done: $file"
+}
+
+# ── Dimensions
 run_sql "dim_date.sql"
 run_sql "dim_customers.sql"
 run_sql "dim_sellers.sql"
 run_sql "dim_products.sql"
 
-# ── Facts (must follow dims; fact_orders before item/payment/review)
+# ── Facts
 run_sql "fact_orders.sql"
 run_sql "fact_order_items.sql"
 run_sql "fact_payments.sql"
 run_sql "fact_reviews.sql"
 
-log "====== Warehouse pipeline DONE  ======"
+log "====== Warehouse pipeline DONE ======"

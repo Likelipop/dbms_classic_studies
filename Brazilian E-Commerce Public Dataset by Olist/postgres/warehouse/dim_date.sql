@@ -33,7 +33,7 @@ SELECT
     EXTRACT(ISODOW FROM d) IN (6, 7)             AS is_weekend
 FROM GENERATE_SERIES(
     '2016-01-01'::DATE,
-    '2019-12-31'::DATE,
+    '2022-12-31'::DATE,
     '1 day'::INTERVAL
 ) AS gs(d)
 ON CONFLICT (date_key) DO NOTHING;
