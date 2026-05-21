@@ -1,0 +1,9 @@
+{
+  "3251465": "3251465-My first shared query.sql",
+  "3252698": "Brazilian E-Commerce Public Dataset by Olist/script/bronze/01_schema.sql",
+  "3252699": "Brazilian E-Commerce Public Dataset by Olist/script/bronze/02_raw_import.sql",
+  "3252701": "Brazilian E-Commerce Public Dataset by Olist/script/silver/stg_olist_order_items_dataset.sql",
+  "3252702": "Brazilian E-Commerce Public Dataset by Olist/script/silver/stg_olist_order_payments_dataset.sql",
+  "3252703": "Brazilian E-Commerce Public Dataset by Olist/script/silver/stg_olist_order_reviews_dataset.sql",
+  "3252704": "Brazilian E-Commerce Public Dataset by Olist/script/silver/stg_olist_orders_dataset.sql"
+}

@@ -1,0 +1,93 @@
+.
+├── README.md
+├── data
+│   ├── processed
+│   └── raw
+│       ├── olist_customers_dataset.csv
+│       ├── olist_geolocation_dataset.csv
+│       ├── olist_order_items_dataset.csv
+│       ├── olist_order_payments_dataset.csv
+│       ├── olist_order_reviews_dataset.csv
+│       ├── olist_orders_dataset.csv
+│       ├── olist_products_dataset.csv
+│       ├── olist_sellers_dataset.csv
+│       └── product_category_name_translation.csv
+├── docker-compose.yml
+├── docs
+│   ├── architecture.md
+│   ├── business_rules.md
+│   └── lineage.md
+├── logs
+│   ├── analytics.log
+│   ├── load_raw.log
+│   ├── load_raw_2026-05-21_16-12-04.log
+│   ├── load_raw_2026-05-21_16-12-54.log
+│   ├── load_raw_2026-05-21_16-14-18.log
+│   ├── pipeline.log
+│   ├── staging.log
+│   └── warehouse.log
+├── metabase
+│   └── dashboards
+├── metabase_data
+├── my_tree.txt
+├── postgres
+│   ├── analytics
+│   │   ├── customer_retention.sql
+│   │   ├── delivery_performance.sql
+│   │   ├── payment_analysis.sql
+│   │   ├── product_performance.sql
+│   │   ├── sales_overview.sql
+│   │   └── seller_performance.sql
+│   ├── init
+│   │   ├── 01_create_schemas.sql
+│   │   ├── 02_create_raw_tables.sql
+│   │   ├── 03_create_staging_tables.sql
+│   │   ├── 04_create_dw_tables.sql
+│   │   └── 05_create_analytics_tables.sql
+│   ├── raw
+│   │   ├── load_customers.sql
+│   │   ├── load_geolocation.sql
+│   │   ├── load_order_items.sql
+│   │   ├── load_order_payments.sql
+│   │   ├── load_order_reviews.sql
+│   │   ├── load_orders.sql
+│   │   ├── load_product_category_translation.sql
+│   │   ├── load_products.sql
+│   │   └── load_sellers.sql
+│   ├── staging
+│   │   ├── load_stg_customers.sql
+│   │   ├── load_stg_geolocation.sql
+│   │   ├── load_stg_order_items.sql
+│   │   ├── load_stg_order_payments.sql
+│   │   ├── load_stg_order_reviews.sql
+│   │   ├── load_stg_orders.sql
+│   │   ├── load_stg_product_category_translation.sql
+│   │   ├── load_stg_products.sql
+│   │   └── load_stg_sellers.sql
+│   ├── views
+│   │   └── metabase_views.sql
+│   └── warehouse
+│       ├── dim_customers.sql
+│       ├── dim_date.sql
+│       ├── dim_products.sql
+│       ├── dim_sellers.sql
+│       ├── fact_order_items.sql
+│       ├── fact_orders.sql
+│       ├── fact_payments.sql
+│       └── fact_reviews.sql
+├── postgres_data
+├── readme.md
+├── scaffold.sh
+├── scripts
+│   ├── load_raw.sh
+│   ├── reset_db.sh
+│   ├── run_analytics.sh
+│   ├── run_pipeline.sh
+│   ├── run_staging.sh
+│   ├── run_warehouse.sh
+│   └── utils.sh
+└── tests
+    ├── data_quality.sql
+    └── validation_checks.sql
+
+19 directories, 72 files
