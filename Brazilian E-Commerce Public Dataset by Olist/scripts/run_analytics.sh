@@ -1,44 +1,24 @@
 #!/bin/bash
-
 set -e
 
-# Xác định thư mục gốc của dự án
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
 
-# Load biến môi trường và các hàm tiện ích (log)
-source "$ROOT_DIR/.env"
-source "$ROOT_DIR/scripts/utils.sh"
+log "====== Analytics Pipeline START ======"
 
-# Export mật khẩu để psql không yêu cầu nhập thủ công
-export PGPASSWORD=$POSTGRES_PASSWORD
-
-# Đường dẫn tới thư mục chứa các file SQL analytics
 SQL_DIR="$ROOT_DIR/postgres/analytics"
 
-log "====== Analytics pipeline START ======"
+# Define the list of analytical view generation scripts
+FILES=(
+    "sales_overview.sql"
+    "product_performance.sql"
+    "customer_retention.sql"
+    "seller_performance.sql"
+    "delivery_performance.sql"
+    "payment_analysis.sql"
+)
 
-# Hàm helper để thực thi file SQL
-run_sql() {
-    local file="$1"
+for file in "${FILES[@]}"; do
+    execute_sql_file "$SQL_DIR/$file"
+done
 
-    log "Running Analytics View: $file"
-
-    psql -h localhost \
-        -p $POSTGRES_PORT \
-        -U $POSTGRES_USER \
-        -d $POSTGRES_DB \
-        -v ON_ERROR_STOP=1 \
-        -f "$SQL_DIR/$file"
-
-    log "Done: $file"
-}
-
-# ── Thực thi các file SQL tạo View Phân Tích (Data Marts)
-run_sql "sales_overview.sql"
-run_sql "product_performance.sql"
-run_sql "customer_retention.sql"
-run_sql "seller_performance.sql"
-run_sql "delivery_performance.sql"
-run_sql "payment_analysis.sql"
-
-log "====== Analytics pipeline DONE ======"
+log "====== Analytics Pipeline DONE ======"

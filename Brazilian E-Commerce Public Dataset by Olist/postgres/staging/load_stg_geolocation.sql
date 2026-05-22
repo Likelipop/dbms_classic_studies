@@ -1,32 +1,17 @@
-truncate
-	table staging.stg_geolocation;
+TRUNCATE TABLE staging.stg_customers;
 
-insert
-	into
-	staging.stg_geolocation(
-    geolocation_zip_code_prefix,
-	geolocation_lat,
-	geolocation_lng,
-	geolocation_city,
-	geolocation_state
+INSERT INTO staging.stg_customers(
+    customer_id,
+    customer_unique_id,
+    customer_zip_code_prefix,
+    customer_city,
+    customer_state
 )
-select
-	distinct on
-	(
-    rogd.geolocation_zip_code_prefix,
-	rogd.geolocation_city,
-	rogd.geolocation_state
-)
-    cast(nullif(btrim(rogd.geolocation_zip_code_prefix, ' ''"'), '') as varchar(10)) as geolocation_zip_code_prefix,
-	cast(nullif(btrim(rogd.geolocation_lat, ' ''"'), '') as double precision) as geolocation_lat,
-	cast(nullif(btrim(rogd.geolocation_lng, ' ''"'), '') as double precision) as geolocation_lng,
-	cast(nullif(btrim(rogd.geolocation_city, ' ''"'), '') as varchar(100)) as geolocation_city,
-	cast(nullif(btrim(rogd.geolocation_state, ' ''"'), '') as char(2)) as geolocation_state
-from
-	raw.olist_geolocation_dataset rogd
-where
-	nullif(btrim(rogd.geolocation_zip_code_prefix, ' ''"'), '') is not null
-order by
-	rogd.geolocation_zip_code_prefix,
-	rogd.geolocation_city,
-	rogd.geolocation_state;
+SELECT DISTINCT ON (rocd.customer_id)
+    CAST(NULLIF(BTRIM(rocd.customer_id, ' ''"'), '') AS UUID) AS customer_id,
+    CAST(NULLIF(BTRIM(rocd.customer_unique_id, ' ''"'), '') AS UUID) AS customer_unique_id,
+    CAST(NULLIF(BTRIM(rocd.customer_zip_code_prefix, ' ''"'), '') AS INTEGER) AS customer_zip_code_prefix,
+    CAST(NULLIF(BTRIM(rocd.customer_city, ' ''"'), '') AS TEXT) AS customer_city,
+    CAST(NULLIF(BTRIM(rocd.customer_state, ' ''"'), '') AS TEXT) AS customer_state
+FROM raw.olist_customers_dataset rocd
+ORDER BY rocd.customer_id;

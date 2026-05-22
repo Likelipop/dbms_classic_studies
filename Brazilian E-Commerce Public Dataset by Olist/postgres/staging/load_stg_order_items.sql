@@ -1,7 +1,7 @@
 -- TR
 TRUNCATE TABLE staging.stg_order_items;
 
--- II + SDOF + WOR + OCDU
+-- II + SDOF 
 INSERT INTO staging.stg_order_items (
     order_id,
     order_item_id,
@@ -26,10 +26,4 @@ WHERE
 ORDER BY 
     oi.order_id, 
     oi.order_item_id, 
-    oi.shipping_limit_date DESC
-ON CONFLICT (order_id, order_item_id) DO UPDATE SET 
-    product_id = EXCLUDED.product_id,
-    seller_id = EXCLUDED.seller_id,
-    shipping_limit_date = EXCLUDED.shipping_limit_date,
-    price = EXCLUDED.price,
-    freight_value = EXCLUDED.freight_value;
+    oi.shipping_limit_date DESC;

@@ -1,7 +1,7 @@
 -- TT
 TRUNCATE TABLE staging.stg_order_payments;
 
--- II + OCDU
+-- II 
 INSERT INTO staging.stg_order_payments (
     order_id,
     payment_sequential,
@@ -17,8 +17,4 @@ SELECT
     CAST(op.payment_value AS DECIMAL(12, 2))
 FROM raw.olist_order_payments_dataset AS op
 WHERE op.order_id IS NOT NULL 
-  AND op.payment_type IS NOT NULL
-ON CONFLICT (order_id, payment_sequential) DO UPDATE SET
-    payment_type = EXCLUDED.payment_type,
-    payment_installments = EXCLUDED.payment_installments,
-    payment_value = EXCLUDED.payment_value;
+  AND op.payment_type IS NOT NULL;

@@ -1,43 +1,29 @@
 #!/bin/bash
-
 set -e
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
 
-source "$ROOT_DIR/.env"
-source "$ROOT_DIR/scripts/utils.sh"
-
-export PGPASSWORD=$POSTGRES_PASSWORD
+log "====== Warehouse Pipeline START ======"
 
 SQL_DIR="$ROOT_DIR/postgres/warehouse"
 
-log "====== Warehouse pipeline START ======"
+# Ensure Dimensions are loaded BEFORE Facts due to Foreign Key constraints
+FILES=(
+    # -- Dimensions
+    "dim_date.sql"
+    "dim_customers.sql"
+    "dim_sellers.sql"
+    "dim_products.sql"
+    
+    # -- Facts
+    "fact_orders.sql"
+    "fact_order_items.sql"
+    "fact_payments.sql"
+    "fact_reviews.sql"
+)
 
-run_sql() {
-    local file="$1"
+for file in "${FILES[@]}"; do
+    execute_sql_file "$SQL_DIR/$file"
+done
 
-    log "Running: $file"
-
-    psql -h localhost \
-        -p $POSTGRES_PORT \
-        -U $POSTGRES_USER \
-        -d $POSTGRES_DB \
-        -v ON_ERROR_STOP=1 \
-        -f "$SQL_DIR/$file"
-
-    log "Done: $file"
-}
-
-# ── Dimensions
-run_sql "dim_date.sql"
-run_sql "dim_customers.sql"
-run_sql "dim_sellers.sql"
-run_sql "dim_products.sql"
-
-# ── Facts
-run_sql "fact_orders.sql"
-run_sql "fact_order_items.sql"
-run_sql "fact_payments.sql"
-run_sql "fact_reviews.sql"
-
-log "====== Warehouse pipeline DONE ======"
+log "====== Warehouse Pipeline DONE ======"

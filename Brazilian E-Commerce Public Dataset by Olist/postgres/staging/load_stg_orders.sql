@@ -1,7 +1,7 @@
 -- TR
 TRUNCATE TABLE staging.stg_orders;
 
--- II + SDOF + WOR + OCDU
+-- II + SDOF + WOR 
 INSERT INTO staging.stg_orders (
     order_id,
     customer_id,
@@ -26,12 +26,4 @@ WHERE
     oo.order_id IS NOT NULL
 ORDER BY 
     oo.order_id, 
-    oo.order_purchase_timestamp DESC
-ON CONFLICT (order_id) DO UPDATE SET 
-    customer_id = EXCLUDED.customer_id,
-    order_status = EXCLUDED.order_status,
-    order_purchase_timestamp = EXCLUDED.order_purchase_timestamp,
-    order_approved_at = EXCLUDED.order_approved_at,
-    order_delivered_carrier_date = EXCLUDED.order_delivered_carrier_date,
-    order_delivered_customer_date = EXCLUDED.order_delivered_customer_date,
-    order_estimated_delivery_date = EXCLUDED.order_estimated_delivery_date;
+    oo.order_purchase_timestamp DESC;

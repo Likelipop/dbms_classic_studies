@@ -1,8 +1,7 @@
-
 --TrT
 TRUNCATE TABLE staging.stg_order_reviews;
 
---II + SDOOr + OCDUS
+--II + SDOOr
 INSERT INTO staging.stg_order_reviews (
     review_id,
     order_id,
@@ -27,9 +26,4 @@ WHERE
     oord.review_score::INTEGER BETWEEN 0 AND 10
 ORDER BY
     oord.review_id, 
-    oord.review_answer_timestamp DESC 
-ON CONFLICT (review_id) DO UPDATE SET
-    review_score = EXCLUDED.review_score,
-    review_comment_title = EXCLUDED.review_comment_title,
-    review_comment_message = EXCLUDED.review_comment_message,
-    review_answer_timestamp = EXCLUDED.review_answer_timestamp;
+    oord.review_answer_timestamp DESC;

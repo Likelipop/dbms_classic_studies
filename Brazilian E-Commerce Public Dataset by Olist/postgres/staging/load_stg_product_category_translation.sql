@@ -1,26 +1,12 @@
-truncate
-	table staging.stg_product_category_translation;
+TRUNCATE TABLE staging.stg_product_category_translation;
 
-insert
-	into
-	staging.stg_product_category_translation(
+INSERT INTO staging.stg_product_category_translation(
     product_category_name,
-	product_category_name_english
+    product_category_name_english
 )
-select
-	distinct on
-	(rpcnt.product_category_name)
-    cast(nullif(btrim(rpcnt.product_category_name, ' ''"'), '') as text) as product_category_name,
-	cast(nullif(btrim(rpcnt.product_category_name_english, ' ''"'), '') as text) as product_category_name_english
-from
-	raw.product_category_name_translation rpcnt
-where
-	nullif(btrim(rpcnt.product_category_name, ' ''"'), '') is not null
-order by
-	rpcnt.product_category_name
-
-on
-	conflict (product_category_name) do
-update
-set
-	product_category_name_english = excluded.product_category_name_english;
+SELECT DISTINCT ON (rpcnt.product_category_name)
+    CAST(NULLIF(BTRIM(rpcnt.product_category_name, ' ''"'), '') AS TEXT) AS product_category_name,
+    CAST(NULLIF(BTRIM(rpcnt.product_category_name_english, ' ''"'), '') AS TEXT) AS product_category_name_english
+FROM raw.product_category_name_translation rpcnt
+WHERE NULLIF(BTRIM(rpcnt.product_category_name, ' ''"'), '') IS NOT NULL
+ORDER BY rpcnt.product_category_name;

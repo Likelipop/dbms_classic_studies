@@ -1,41 +1,28 @@
 #!/bin/bash
-
 set -e
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
 
-source "$ROOT_DIR/.env"
-source "$ROOT_DIR/scripts/utils.sh"
+log "====== Raw Pipeline START ======"
 
-export PGPASSWORD=$POSTGRES_PASSWORD
+SQL_DIR="$ROOT_DIR/postgres/raw"
 
-log "START loading raw tables"
+# Define the list of raw data load scripts
+FILES=(
+    "load_customers.sql"
+    "load_geolocation.sql"
+    "load_order_items.sql"
+    "load_order_payments.sql"
+    "load_order_reviews.sql"
+    "load_orders.sql"
+    "load_products.sql"
+    "load_sellers.sql"
+    "load_product_category_translation.sql"
+)
 
-psql -h localhost -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB \
-    -f "$ROOT_DIR/postgres/raw/load_customers.sql"
+# Execute each file
+for file in "${FILES[@]}"; do
+    execute_sql_file "$SQL_DIR/$file"
+done
 
-psql -h localhost -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB \
-    -f "$ROOT_DIR/postgres/raw/load_geolocation.sql"
-
-psql -h localhost -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB \
-    -f "$ROOT_DIR/postgres/raw/load_order_items.sql"
-
-psql -h localhost -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB \
-    -f "$ROOT_DIR/postgres/raw/load_order_payments.sql"
-
-psql -h localhost -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB \
-    -f "$ROOT_DIR/postgres/raw/load_order_reviews.sql"
-
-psql -h localhost -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB \
-    -f "$ROOT_DIR/postgres/raw/load_orders.sql"
-
-psql -h localhost -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB \
-    -f "$ROOT_DIR/postgres/raw/load_products.sql"
-
-psql -h localhost -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB \
-    -f "$ROOT_DIR/postgres/raw/load_sellers.sql"
-
-psql -h localhost -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB \
-    -f "$ROOT_DIR/postgres/raw/load_product_category_translation.sql"
-
-log "FINISH loading raw tables"
+log "====== Raw Pipeline DONE ======"
