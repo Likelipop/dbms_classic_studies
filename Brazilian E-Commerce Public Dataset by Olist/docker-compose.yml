@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: ${POSTGRES_CONTAINER_NAME}
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+    ports:
+      - "${POSTGRES_PORT}:5432"
+
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+      - ./init_sql:/docker-entrypoint-initdb.d
+
+    networks:
+      - data_network
+
+  metabase:
+    image: metabase/metabase:latest
+    container_name: ${METABASE_CONTAINER_NAME}
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      # Xóa dòng MB_DB_FILE cũ đi và thay bằng các biến dưới đây:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: ${POSTGRES_DB}          # Hoặc tạo 1 db riêng tên là metabase_metadata nếu muốn tách biệt
+      MB_DB_PORT: 5432
+      MB_DB_USER: ${POSTGRES_USER}
+      MB_DB_PASS: ${POSTGRES_PASSWORD}
+      MB_DB_HOST: postgres                  # Tên service của Postgres trong docker-compose
+
+    ports:
+      - "${METABASE_PORT}:3000"
+
+    # Không cần mount volume metabase_data chứa file .db nữa vì đã lưu vào Postgres
+    depends_on:
+      - postgres
+
+    networks:
+      - data_network
+
+networks:
+  data_network:
+    driver: bridge
