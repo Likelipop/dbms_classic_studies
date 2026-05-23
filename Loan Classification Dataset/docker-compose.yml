@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  # -------------------------
+  # MinIO (Data Lake & Model Registry)
+  # -------------------------
+  minio:
+    image: minio/minio:latest
+    container_name: minio_server
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - loan_network
+
+  minio-mc:
+    image: minio/mc:latest
+    container_name: minio_client
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c " sleep 5; mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}; mc mb myminio/raw-data || true; mc mb myminio/ml-models || true; mc policy set public myminio/raw-data; exit 0; "
+    networks:
+      - loan_network
+
+  # -------------------------
+  # MySQL (Bronze & Silver Layers)
+  # -------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_bronze_silver
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: loan_db
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-scripts/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - loan_network
+
+  # -------------------------
+  # PostgreSQL (Gold Layer)
+  # -------------------------
+  postgres:
+    image: postgres:15
+    container_name: postgres_gold
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: loan_gold_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - loan_network
+
+  # -------------------------
+  # Metabase (Dashboard & BI)
+  # -------------------------
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase_dashboard
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - mysql
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: ${POSTGRES_USER}
+      MB_DB_PASS: ${POSTGRES_PASSWORD}
+      MB_DB_HOST: postgres
+    # Using the same postgres instance for metabase internal DB for simplicity
+    # The init script will create the 'metabase' database.
+    networks:
+      - loan_network
+
+volumes:
+  minio_data:
+  mysql_data:
+  postgres_data:
+
+networks:
+  loan_network:
+    driver: bridge

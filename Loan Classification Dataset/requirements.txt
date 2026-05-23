@@ -1,0 +1,10 @@
+pandas
+numpy
+SQLAlchemy
+PyMySQL
+psycopg2-binary
+minio
+scikit-learn
+xgboost
+python-dotenv
+jupyterlab

@@ -1,0 +1,3 @@
+-- Example Bronze load script
+-- LOAD DATA INFILE '...' INTO TABLE bronze_loans_raw ...
+SELECT 'Placeholder for loading raw MinIO data to MySQL Bronze layer';
