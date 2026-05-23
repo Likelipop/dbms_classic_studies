@@ -40,9 +40,9 @@ def init_mysql():
 
 def init_postgres():
     engine = get_postgres_engine()
-    with engine.connect() as conn:
-        conn.commit() # Just check connection
-    logger.info("Checked PostgreSQL connection (Gold)")
+    sql_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "init-scripts", "postgres-init.sql")
+    execute_sql_file(engine, sql_file, logger)
+    logger.info("Initialized PostgreSQL schemas (Gold) from SQL script")
 
 if __name__ == "__main__":
     logger.info("Starting Database and Data Lake Initialization...")
