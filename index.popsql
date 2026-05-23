@@ -45,5 +45,10 @@
   "3259040": "Brazilian E-Commerce Public Dataset by Olist/postgres/warehouse/fact_payments.sql",
   "3259041": "Brazilian E-Commerce Public Dataset by Olist/postgres/warehouse/fact_reviews.sql",
   "3259042": "Brazilian E-Commerce Public Dataset by Olist/tests/data_quality.sql",
-  "3259043": "Brazilian E-Commerce Public Dataset by Olist/tests/validation_checks.sql"
+  "3259043": "Brazilian E-Commerce Public Dataset by Olist/tests/validation_checks.sql",
+  "3259786": "Loan Classification Dataset/init-scripts/mysql-init.sql",
+  "3259787": "Loan Classification Dataset/init-scripts/postgres-init.sql",
+  "3259788": "Loan Classification Dataset/src/sql/bronze/load_raw.sql",
+  "3259789": "Loan Classification Dataset/src/sql/gold/aggregate.sql",
+  "3259790": "Loan Classification Dataset/src/sql/silver/normalize.sql"
 }
